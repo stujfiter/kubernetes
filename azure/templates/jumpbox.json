@@ -2,12 +2,12 @@
     "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
     "contentVersion": "1.0.0.0",
     "parameters": {
-        "vpc_resource_group": {
+        "vnet_resource_group": {
             "type": "string",
-            "defaultValue": "my-vpc"
+            "defaultValue": "my-vnet"
         },
-        "vpc_name": {
-            "defaultValue": "my-vpc",
+        "vnet_name": {
+            "defaultValue": "my-vnet",
             "type": "string"
         }
     },
@@ -100,7 +100,7 @@
                                 "id": "[resourceId('Microsoft.Network/publicIPAddresses', 'jumpbox-ip')]"
                             },
                             "subnet": {
-                                "id": "[resourceId(parameters('vpc_resource_group'), 'Microsoft.Network/virtualNetworks/subnets', parameters('vpc_name'), 'default')]"
+                                "id": "[resourceId(parameters('vnet_resource_group'), 'Microsoft.Network/virtualNetworks/subnets', parameters('vnet_name'), 'default')]"
                             },
                             "primary": true,
                             "privateIPAddressVersion": "IPv4"

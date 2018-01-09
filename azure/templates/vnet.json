@@ -6,7 +6,7 @@
     "resources": [
         {
             "apiVersion": "2017-08-01",
-            "name": "my-vpc",
+            "name": "my-vnet",
             "type": "Microsoft.Network/virtualNetworks",
             "location": "centralus",
             "properties": {

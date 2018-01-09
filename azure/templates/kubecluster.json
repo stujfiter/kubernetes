@@ -2,13 +2,13 @@
     "$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
     "contentVersion": "1.0.0.0",
     "parameters": {
-        "vpc_resource_group": {
+        "vnet_resource_group": {
             "type": "string",
-            "defaultValue": "my-vpc"
+            "defaultValue": "my-vnet"
         },
-        "vpc_name": {
+        "vnet_name": {
             "type": "string",
-            "defaultValue": "my-vpc"
+            "defaultValue": "my-vnet"
         }
     },
     "variables": {},
@@ -26,7 +26,7 @@
                         "properties": {
                             "privateIPAllocationMethod": "Dynamic",
                             "subnet": {
-                                "id": "[resourceId(parameters('vpc_resource_group'), 'Microsoft.Network/virtualNetworks/subnets', parameters('vpc_name'), 'default')]"
+                                "id": "[resourceId(parameters('vnet_resource_group'), 'Microsoft.Network/virtualNetworks/subnets', parameters('vnet_name'), 'default')]"
                             }
                         }
                     }
@@ -85,7 +85,7 @@
                                             "properties": {
                                                 "primary": true,
                                                 "subnet": {
-                                                    "id": "[resourceId(parameters('vpc_resource_group'), 'Microsoft.Network/virtualNetworks/subnets', parameters('vpc_name'), 'default')]"
+                                                    "id": "[resourceId(parameters('vnet_resource_group'), 'Microsoft.Network/virtualNetworks/subnets', parameters('vnet_name'), 'default')]"
                                                 },
                                                 "loadBalancerBackendAddressPools": [
                                                     {
