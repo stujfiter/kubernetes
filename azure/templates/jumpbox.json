@@ -2,53 +2,22 @@
     "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
     "contentVersion": "1.0.0.0",
     "parameters": {
-        "virtualMachines_jumpbox_name": {
-            "defaultValue": "jumpbox",
-            "type": "String"
+        "vpc_resource_group": {
+            "type": "string",
+            "defaultValue": "my-vpc"
         },
-        "networkInterfaces_jumpbox726_name": {
-            "defaultValue": "jumpbox726",
-            "type": "String"
-        },
-        "publicIPAddresses_jumpbox_ip_name": {
-            "defaultValue": "jumpbox-ip",
-            "type": "String"
-        },
-        "virtualNetworks_mrcooper_vnet_name": {
-            "defaultValue": "mrcooper-vnet",
-            "type": "String"
-        },
-        "storageAccounts_mrcooperdiag626_name": {
-            "defaultValue": "mrcooperdiag626",
-            "type": "String"
-        },
-        "networkSecurityGroups_jumpbox_nsg_name": {
-            "defaultValue": "jumpbox-nsg",
-            "type": "String"
-        },
-        "schedules_shutdown_computevm_jumpbox_name": {
-            "defaultValue": "shutdown-computevm-jumpbox",
-            "type": "String"
-        },
-        "subnets_default_name": {
-            "defaultValue": "default",
-            "type": "String"
-        },
-        "securityRules_default_allow_ssh_name": {
-            "defaultValue": "default-allow-ssh",
-            "type": "String"
-        },
-        "virtualMachines_jumpbox_id": {
-            "defaultValue": "/subscriptions/e26c08ae-eb68-4000-94b3-96b9b37da1fc/resourceGroups/mrcooper/providers/Microsoft.Compute/disks/jumpbox_OsDisk_1_a08e36135c1b4616a5d42a3bb9c667f9",
-            "type": "String"
+        "vpc_name": {
+            "defaultValue": "my-vpc",
+            "type": "string"
         }
     },
-    "variables": {},
+    "variables": {
+        "storageAccountName": "[concat('storage', uniqueString(resourceGroup().id))]"
+    },
     "resources": [
         {
-            "comments": "Generalized from resource: '/subscriptions/e26c08ae-eb68-4000-94b3-96b9b37da1fc/resourceGroups/mrcooper/providers/Microsoft.Compute/virtualMachines/jumpbox'.",
             "type": "Microsoft.Compute/virtualMachines",
-            "name": "[parameters('virtualMachines_jumpbox_name')]",
+            "name": "jumpbox",
             "apiVersion": "2017-03-30",
             "location": "centralus",
             "scale": null,
@@ -65,7 +34,7 @@
                     },
                     "osDisk": {
                         "osType": "Linux",
-                        "name": "[concat(parameters('virtualMachines_jumpbox_name'),'_OsDisk_1_a08e36135c1b4616a5d42a3bb9c667f9')]",
+                        "name": "[concat('jumpbox','_OsDisk_1_a08e36135c1b4616a5d42a3bb9c667f9')]",
                         "createOption": "FromImage",
                         "caching": "ReadWrite",
                         "managedDisk": {
@@ -76,7 +45,7 @@
                     "dataDisks": []
                 },
                 "osProfile": {
-                    "computerName": "[parameters('virtualMachines_jumpbox_name')]",
+                    "computerName": "jumpbox",
                     "adminUsername": "kearl",
                     "linuxConfiguration": {
                         "disablePasswordAuthentication": true,
@@ -94,52 +63,25 @@
                 "networkProfile": {
                     "networkInterfaces": [
                         {
-                            "id": "[resourceId('Microsoft.Network/networkInterfaces', parameters('networkInterfaces_jumpbox726_name'))]"
+                            "id": "[resourceId('Microsoft.Network/networkInterfaces', 'jumpbox-nic')]"
                         }
                     ]
                 },
                 "diagnosticsProfile": {
                     "bootDiagnostics": {
                         "enabled": true,
-                        "storageUri": "[concat('https', '://', parameters('storageAccounts_mrcooperdiag626_name'), '.blob.core.windows.net', '/')]"
+                        "storageUri": "[concat('https', '://', variables('storageAccountName'), '.blob.core.windows.net', '/')]"
                     }
                 }
             },
             "dependsOn": [
-                "[resourceId('Microsoft.Network/networkInterfaces', parameters('networkInterfaces_jumpbox726_name'))]",
-                "[resourceId('Microsoft.Storage/storageAccounts', parameters('storageAccounts_mrcooperdiag626_name'))]"
+                "[resourceId('Microsoft.Network/networkInterfaces', 'jumpbox-nic')]",
+                "[resourceId('Microsoft.Storage/storageAccounts', variables('storageAccountName'))]"
             ]
         },
         {
-            "comments": "Generalized from resource: '/subscriptions/e26c08ae-eb68-4000-94b3-96b9b37da1fc/resourcegroups/mrcooper/providers/microsoft.devtestlab/schedules/shutdown-computevm-jumpbox'.",
-            "type": "microsoft.devtestlab/schedules",
-            "name": "[parameters('schedules_shutdown_computevm_jumpbox_name')]",
-            "apiVersion": "2016-05-15",
-            "location": "centralus",
-            "scale": null,
-            "properties": {
-                "status": "Enabled",
-                "taskType": "ComputeVmShutdownTask",
-                "dailyRecurrence": {
-                    "time": "1900"
-                },
-                "timeZoneId": "UTC",
-                "notificationSettings": {
-                    "status": "Disabled",
-                    "timeInMinutes": 30
-                },
-                "targetResourceId": "[resourceId('Microsoft.Compute/virtualMachines', parameters('virtualMachines_jumpbox_name'))]",
-                "provisioningState": "Succeeded",
-                "uniqueIdentifier": "4a85bcfe-fee6-44f2-9074-5947045a8ae6"
-            },
-            "dependsOn": [
-                "[resourceId('Microsoft.Compute/virtualMachines', parameters('virtualMachines_jumpbox_name'))]"
-            ]
-        },
-        {
-            "comments": "Generalized from resource: '/subscriptions/e26c08ae-eb68-4000-94b3-96b9b37da1fc/resourceGroups/mrcooper/providers/Microsoft.Network/networkInterfaces/jumpbox726'.",
             "type": "Microsoft.Network/networkInterfaces",
-            "name": "[parameters('networkInterfaces_jumpbox726_name')]",
+            "name": "jumpbox-nic",
             "apiVersion": "2017-06-01",
             "location": "centralus",
             "scale": null,
@@ -155,10 +97,10 @@
                             "privateIPAddress": "10.0.0.4",
                             "privateIPAllocationMethod": "Dynamic",
                             "publicIPAddress": {
-                                "id": "[resourceId('Microsoft.Network/publicIPAddresses', parameters('publicIPAddresses_jumpbox_ip_name'))]"
+                                "id": "[resourceId('Microsoft.Network/publicIPAddresses', 'jumpbox-ip')]"
                             },
                             "subnet": {
-                                "id": "[resourceId('Microsoft.Network/virtualNetworks/subnets', parameters('virtualNetworks_mrcooper_vnet_name'), parameters('subnets_default_name'))]"
+                                "id": "[resourceId(parameters('vpc_resource_group'), 'Microsoft.Network/virtualNetworks/subnets', parameters('vpc_name'), 'default')]"
                             },
                             "primary": true,
                             "privateIPAddressVersion": "IPv4"
@@ -174,19 +116,17 @@
                 "enableAcceleratedNetworking": false,
                 "enableIPForwarding": false,
                 "networkSecurityGroup": {
-                    "id": "[resourceId('Microsoft.Network/networkSecurityGroups', parameters('networkSecurityGroups_jumpbox_nsg_name'))]"
+                    "id": "[resourceId('Microsoft.Network/networkSecurityGroups', 'jumpbox-nsg')]"
                 }
             },
             "dependsOn": [
-                "[resourceId('Microsoft.Network/publicIPAddresses', parameters('publicIPAddresses_jumpbox_ip_name'))]",
-                "[resourceId('Microsoft.Network/virtualNetworks/subnets', parameters('virtualNetworks_mrcooper_vnet_name'), parameters('subnets_default_name'))]",
-                "[resourceId('Microsoft.Network/networkSecurityGroups', parameters('networkSecurityGroups_jumpbox_nsg_name'))]"
+                "[resourceId('Microsoft.Network/publicIPAddresses', 'jumpbox-ip')]",
+                "[resourceId('Microsoft.Network/networkSecurityGroups', 'jumpbox-nsg')]"
             ]
         },
         {
-            "comments": "Generalized from resource: '/subscriptions/e26c08ae-eb68-4000-94b3-96b9b37da1fc/resourceGroups/mrcooper/providers/Microsoft.Network/networkSecurityGroups/jumpbox-nsg'.",
             "type": "Microsoft.Network/networkSecurityGroups",
-            "name": "[parameters('networkSecurityGroups_jumpbox_nsg_name')]",
+            "name": "jumpbox-nsg",
             "apiVersion": "2017-06-01",
             "location": "centralus",
             "scale": null,
@@ -199,7 +139,7 @@
                         "etag": "W/\"fc90db41-dd14-42c6-b517-a60b10f8719d\"",
                         "properties": {
                             "provisioningState": "Succeeded",
-                            "protocol": "TCP",
+                            "protocol": "Tcp",
                             "sourcePortRange": "*",
                             "destinationPortRange": "22",
                             "sourceAddressPrefix": "*",
@@ -326,9 +266,8 @@
             "dependsOn": []
         },
         {
-            "comments": "Generalized from resource: '/subscriptions/e26c08ae-eb68-4000-94b3-96b9b37da1fc/resourceGroups/mrcooper/providers/Microsoft.Network/publicIPAddresses/jumpbox-ip'.",
             "type": "Microsoft.Network/publicIPAddresses",
-            "name": "[parameters('publicIPAddresses_jumpbox_ip_name')]",
+            "name": "jumpbox-ip",
             "apiVersion": "2017-06-01",
             "location": "centralus",
             "scale": null,
@@ -343,43 +282,13 @@
             "dependsOn": []
         },
         {
-            "comments": "Generalized from resource: '/subscriptions/e26c08ae-eb68-4000-94b3-96b9b37da1fc/resourceGroups/mrcooper/providers/Microsoft.Network/virtualNetworks/mrcooper-vnet'.",
-            "type": "Microsoft.Network/virtualNetworks",
-            "name": "[parameters('virtualNetworks_mrcooper_vnet_name')]",
-            "apiVersion": "2017-06-01",
-            "location": "centralus",
-            "scale": null,
-            "properties": {
-                "provisioningState": "Succeeded",
-                "resourceGuid": "95845469-db3b-48b9-8463-4192e0b3ac01",
-                "addressSpace": {
-                    "addressPrefixes": [
-                        "10.0.0.0/24"
-                    ]
-                },
-                "subnets": [
-                    {
-                        "name": "default",
-                        "etag": "W/\"808379ae-e7fd-4f3b-87e0-59503b1be4c4\"",
-                        "properties": {
-                            "provisioningState": "Succeeded",
-                            "addressPrefix": "10.0.0.0/24"
-                        }
-                    }
-                ],
-                "virtualNetworkPeerings": []
-            },
-            "dependsOn": []
-        },
-        {
-            "comments": "Generalized from resource: '/subscriptions/e26c08ae-eb68-4000-94b3-96b9b37da1fc/resourceGroups/mrcooper/providers/Microsoft.Storage/storageAccounts/mrcooperdiag626'.",
             "type": "Microsoft.Storage/storageAccounts",
             "sku": {
                 "name": "Standard_LRS",
                 "tier": "Standard"
             },
             "kind": "Storage",
-            "name": "[parameters('storageAccounts_mrcooperdiag626_name')]",
+            "name": "[variables('storageAccountName')]",
             "apiVersion": "2017-06-01",
             "location": "centralus",
             "scale": null,
@@ -397,43 +306,6 @@
                 }
             },
             "dependsOn": []
-        },
-        {
-            "comments": "Generalized from resource: '/subscriptions/e26c08ae-eb68-4000-94b3-96b9b37da1fc/resourceGroups/mrcooper/providers/Microsoft.Network/networkSecurityGroups/jumpbox-nsg/securityRules/default-allow-ssh'.",
-            "type": "Microsoft.Network/networkSecurityGroups/securityRules",
-            "name": "[concat(parameters('networkSecurityGroups_jumpbox_nsg_name'), '/', parameters('securityRules_default_allow_ssh_name'))]",
-            "apiVersion": "2017-06-01",
-            "scale": null,
-            "properties": {
-                "provisioningState": "Succeeded",
-                "protocol": "TCP",
-                "sourcePortRange": "*",
-                "destinationPortRange": "22",
-                "sourceAddressPrefix": "*",
-                "destinationAddressPrefix": "*",
-                "access": "Allow",
-                "priority": 1000,
-                "direction": "Inbound",
-                "sourceAddressPrefixes": [],
-                "destinationAddressPrefixes": []
-            },
-            "dependsOn": [
-                "[resourceId('Microsoft.Network/networkSecurityGroups', parameters('networkSecurityGroups_jumpbox_nsg_name'))]"
-            ]
-        },
-        {
-            "comments": "Generalized from resource: '/subscriptions/e26c08ae-eb68-4000-94b3-96b9b37da1fc/resourceGroups/mrcooper/providers/Microsoft.Network/virtualNetworks/mrcooper-vnet/subnets/default'.",
-            "type": "Microsoft.Network/virtualNetworks/subnets",
-            "name": "[concat(parameters('virtualNetworks_mrcooper_vnet_name'), '/', parameters('subnets_default_name'))]",
-            "apiVersion": "2017-06-01",
-            "scale": null,
-            "properties": {
-                "provisioningState": "Succeeded",
-                "addressPrefix": "10.0.0.0/24"
-            },
-            "dependsOn": [
-                "[resourceId('Microsoft.Network/virtualNetworks', parameters('virtualNetworks_mrcooper_vnet_name'))]"
-            ]
         }
     ]
 }

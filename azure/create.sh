@@ -12,6 +12,7 @@ declare subscriptionId=""
 declare resourceGroupName=""
 declare resourceGroupLocation=""
 declare templateFilePath=""
+declare resource_group_exists=""
 
 # Initialize parameters specified from command line
 while getopts ":i:g:n:l:t:" arg; do
@@ -59,9 +60,9 @@ az account set --subscription $subscriptionId
 
 
 #Check for existing RG
-az group show $resourceGroupName 1> /dev/null
+resource_group_exists=$(az group exists --resource-group $resourceGroupName)
 
-if [ $? != 0 ]; then
+if [ "$resource_group_exists" = "false" ]; then
 	echo "Resource group with name" $resourceGroupName "could not be found. Creating new resource group.."
 	set -e
 	(

@@ -6,7 +6,7 @@
     "resources": [
         {
             "apiVersion": "2017-08-01",
-            "name": "mrcooper-vpc",
+            "name": "my-vpc",
             "type": "Microsoft.Network/virtualNetworks",
             "location": "centralus",
             "properties": {
