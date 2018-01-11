@@ -14,8 +14,8 @@
     "variables": {},
     "resources": [
         {
-            "apiVersion": "2017-08-01",
             "name": "KubeClusterLoadBalancer",
+            "apiVersion": "2017-08-01",
             "type": "Microsoft.Network/loadBalancers",
             "location": "Central US",
             "dependsOn": [],
@@ -106,5 +106,10 @@
             }
         }
     ],
-    "outputs": {}
+    "outputs": {
+        "instanceIds": {
+            "type":"object",
+            "value": "[reference('KubeScaleSet')]"
+        }
+    }
 }
