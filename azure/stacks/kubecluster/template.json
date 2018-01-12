@@ -13,6 +13,10 @@
         "custom_data": {
             "type":"string",
             "defaultValue": ""
+        },
+        "cloud_init_data": {
+            "type":"string",
+            "defaultValue": ""
         }
     },
     "variables": {},
@@ -57,7 +61,7 @@
                     "osProfile": {
                         "computerNamePrefix": "kubeNode",
                         "adminUsername": "kearl",
-                        "customData": "[base64(parameters('custom_data'))]",
+                        "customData": "[base64(replace(parameters('custom_data'), '${cloud-init-data}', parameters('cloud_init_data')))]",
                         "linuxConfiguration": {
                             "disablePasswordAuthentication": true,
                             "ssh": {

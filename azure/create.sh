@@ -74,11 +74,15 @@ if [ "$resource_group_exists" = "false" ]; then
 	echo "Using existing resource group..."
 fi
 
+if [ -f "./stacks/$stackName/include.sh" ]; then
+	. ./stacks/$stackName/include.sh
+fi
+
 #Start deployment
 echo "Starting deployment..."
 (
 	if [ -f "./stacks/$stackName/cloud-init.yaml" ]; then
-		az group deployment create --resource-group $resourceGroupName --template-file ./stacks/$stackName/template.json --parameters custom_data=@./stacks/$stackName/cloud-init.yaml
+		az group deployment create --resource-group $resourceGroupName --template-file ./stacks/$stackName/template.json --parameters custom_data=@./stacks/$stackName/cloud-init.yaml cloud_init_data=$(cloudInitData)
 	else
 		az group deployment create --resource-group $resourceGroupName --template-file ./stacks/$stackName/template.json
 	fi
@@ -90,6 +94,5 @@ fi
 
 #Generate the Outputs
 if [ -f "./stacks/$stackName/include.sh" ]; then
-	. ./stacks/$stackName/include.sh
 	outputs
 fi

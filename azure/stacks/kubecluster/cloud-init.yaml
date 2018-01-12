@@ -1,4 +1,12 @@
 #cloud-config
+write_files:
+  - owner: root:root
+  - path: /cloud-init-data.txt
+    content: |
+      ${cloud-init-data}
 runcmd:
   - git clone http://github.com/stujfiter/kubernetes.git
   - /kubernetes/install-kubeadm-ubuntu.sh
+  - export NODE_NAME=$(hostname)
+  - export NODE_IP=$(ifconfig eth0 | grep Mask | awk '{print $2}'| cut -f2 -d:)
+  - export DISCOVERY_TOKEN=$(cat)
