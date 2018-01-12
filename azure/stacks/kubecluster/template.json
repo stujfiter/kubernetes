@@ -9,6 +9,10 @@
         "vnet_name": {
             "type": "string",
             "defaultValue": "my-vnet"
+        },
+        "custom_data": {
+            "type":"string",
+            "defaultValue": ""
         }
     },
     "variables": {},
@@ -53,6 +57,7 @@
                     "osProfile": {
                         "computerNamePrefix": "kubeNode",
                         "adminUsername": "kearl",
+                        "customData": "[base64(parameters('custom_data'))]",
                         "linuxConfiguration": {
                             "disablePasswordAuthentication": true,
                             "ssh": {

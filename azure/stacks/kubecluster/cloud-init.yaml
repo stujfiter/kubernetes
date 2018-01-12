@@ -1,0 +1,4 @@
+#cloud-config
+runcmd:
+  - git clone http://github.com/stujfiter/kubernetes.git
+  - /kubernetes/install-kubeadm-ubuntu.sh
