@@ -1,5 +1,5 @@
 cloudInitData() {
-    curl https://discovery.etcd.io/new\?size\=3
+    curl --silent https://discovery.etcd.io/new\?size\=3
 }
 
 outputs() {

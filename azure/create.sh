@@ -82,9 +82,9 @@ fi
 echo "Starting deployment..."
 (
 	if [ -f "./stacks/$stackName/cloud-init.yaml" ]; then
-		az group deployment create --resource-group $resourceGroupName --template-file ./stacks/$stackName/template.json --parameters custom_data=@./stacks/$stackName/cloud-init.yaml cloud_init_data=$(cloudInitData)
+		az group deployment create --resource-group $resourceGroupName --template-file ./stacks/$stackName/template.json --parameters custom_data=@./stacks/$stackName/cloud-init.yaml cloud_init_data=$(cloudInitData) 1> /dev/null
 	else
-		az group deployment create --resource-group $resourceGroupName --template-file ./stacks/$stackName/template.json
+		az group deployment create --resource-group $resourceGroupName --template-file ./stacks/$stackName/template.json 1> /dev/null
 	fi
 )
 

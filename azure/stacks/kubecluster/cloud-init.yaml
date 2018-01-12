@@ -7,6 +7,8 @@ write_files:
 runcmd:
   - git clone http://github.com/stujfiter/kubernetes.git
   - /kubernetes/install-kubeadm-ubuntu.sh
-  - export NODE_NAME=$(hostname)
-  - export NODE_IP=$(ifconfig eth0 | grep Mask | awk '{print $2}'| cut -f2 -d:)
-  - export DISCOVERY_TOKEN=$(cat)
+  # - kubelet
+  # - export NODE_NAME=$(hostname)
+  # - export NODE_IP=$(ifconfig eth0 | grep Mask | awk '{print $2}'| cut -f2 -d:)
+  # - export DISCOVERY_TOKEN=$(cat cloud-init-data.txt)
+  # - sed "s/\${NODE_NAME}/${NODE_NAME}/g" /kubernetes/etcd.yaml | sed "s%\${NODE_IP}%${NODE_IP}%g" | sed "s/\${DISCOVERY_TOKEN}/${DISCOVERY_TOKEN}/g" | tee /etc/kubernetes/manifests/etcd.yaml
