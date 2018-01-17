@@ -6,6 +6,7 @@ write_files:
       ${cloud-init-data}
 runcmd:
   - git clone http://github.com/stujfiter/kubernetes.git
+  - /kubernetes/azure/install_azure_cli.sh
   - /kubernetes/install-kubeadm-ubuntu.sh
   - /kubernetes/start-master.sh
   # - kubelet
