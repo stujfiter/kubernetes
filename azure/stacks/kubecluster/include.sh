@@ -1,5 +1,5 @@
 cloudInitData() {
-    curl --silent https://discovery.etcd.io/new\?size\=3
+    echo etcdDiscoveryTokenUri="$(curl --silent https://discovery.etcd.io/new\?size\=3)"
 }
 
 outputs() {
