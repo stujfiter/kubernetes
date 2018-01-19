@@ -5,10 +5,10 @@ write_files:
     content: |
       ${cloud-init-data}
 runcmd:
+  - . /cloud-init-data.txt
   - git clone http://github.com/stujfiter/kubernetes.git
-  - /kubernetes/azure/install_azure_cli.sh
   - /kubernetes/install-kubeadm-ubuntu.sh
-  - /kubernetes/start-master.sh
+  - if [ "$isMaster" = "true" ]; then /kubernetes/start-master.sh; else /kubernetes/start-worker.sh; fi
   # - kubelet
   # - export NODE_NAME=$(hostname)
   # - export NODE_IP=$(ifconfig eth0 | grep Mask | awk '{print $2}'| cut -f2 -d:)
