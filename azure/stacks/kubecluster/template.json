@@ -17,10 +17,14 @@
         "cloud_init_data": {
             "type": "string",
             "defaultValue": ""
+        },
+        "key_data": {
+            "type": "string",
+            "defaultValue": ""
         }
     },
     "variables": {
-        "key_data":  "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDk7yn9YgBZGt1IUGUfPgOxS1bHd4Fr5+/D3xcvJk2PbaX9/Ei3jlMDuqb+yWMdsiRnG1qB8zA/7tkJX0+KI8SdqUoTa0HdFqWoAeYOALmrLsiHPUMj1RiNcq0w6TCBfgq/czgUss0qOSaZmnSVGsK7A5dbFo0Q4kBMiXatPAhi/xEIzLNIR1ahFuBZkjqdiullVHOUsqM9zv1hvWuF/Zw4MSyoUzaiyQjfmKMgxcDZ4sySqPjlSLY2Zp+Wki6m/vsNj2vrSkIDnRYqoggm7UVm2msqzP2D36uNwK1/PZWY1u1NtcNqEYCG5Qo6iP/gI+SPrCPrYpguFQe2F/Z3b1Pp apollo-guest@Apollos-iMac.local",
+        "key_data":  "[parameters('key_data')]",
         "storage_account_name": "[concat('kubestore',uniqueString(resourceGroup().id))]",
         "init_data": "[concat(parameters('cloud_init_data'),'\n      ','storageAccountName=',variables('storage_account_name'))]",
         "init_data_master": "[concat(variables('init_data'),'\n      ','isMaster=true')]"

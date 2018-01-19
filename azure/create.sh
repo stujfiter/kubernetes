@@ -6,16 +6,17 @@ IFS=$'\n\t'
 # -o: prevents errors in a pipeline from being masked
 # IFS new value is less likely to cause confusing bugs when looping arrays or arguments (e.g. $@)
 
-usage() { echo "Usage: $0 -i <subscriptionId> -g <resourceGroupName> -l <resourceGroupLocation> -s <stackName>" 1>&2; exit 1; }
+usage() { echo "Usage: $0 -i <subscriptionId> -g <resourceGroupName> -l <resourceGroupLocation> -s <stackName> -k <publicKeyPath>" 1>&2; exit 1; }
 
 declare subscriptionId=""
 declare resourceGroupName=""
 declare resourceGroupLocation=""
 declare stackName=""
+declare publicKeyPath=""
 declare resource_group_exists=""
 
 # Initialize parameters specified from command line
-while getopts ":i:g:n:l:s:" arg; do
+while getopts ":i:g:n:l:s:k:" arg; do
 	case "${arg}" in
 		i)
 			subscriptionId=${OPTARG}
@@ -28,6 +29,9 @@ while getopts ":i:g:n:l:s:" arg; do
 			;;
 		s)
 			stackName=${OPTARG}
+			;;
+		k)
+			publicKeyPath=${OPTARG}
 			;;
 		esac
 done
@@ -81,11 +85,15 @@ fi
 #Start deployment
 echo "Starting deployment..."
 (
-	if [ -f "./stacks/$stackName/cloud-init.yaml" ]; then
-		az group deployment create --resource-group $resourceGroupName --template-file ./stacks/$stackName/template.json --parameters custom_data=@./stacks/$stackName/cloud-init.yaml cloud_init_data=$(cloudInitData) 1> /dev/null
+	set +e # don't exit if setParms does not exist
+	type setParams 1> /dev/null
+	if [ $? = 0 ]; then
+		setParams
+		bash -c "az group deployment create --resource-group $resourceGroupName --template-file ./stacks/$stackName/template.json --parameters $params" 1> /dev/null
 	else
 		az group deployment create --resource-group $resourceGroupName --template-file ./stacks/$stackName/template.json 1> /dev/null
 	fi
+	set -e
 )
 
 if [ $?  == 0 ]; then
@@ -93,6 +101,9 @@ if [ $?  == 0 ]; then
 fi
 
 #Generate the Outputs
-if [ -f "./stacks/$stackName/include.sh" ]; then
+set +e # don't exit if setParms does not exist
+type outputs 1> /dev/null
+if [ $? = 0 ]; then
 	outputs
 fi
+set -e
