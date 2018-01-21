@@ -8,5 +8,6 @@ chown kearl:kearl /home/kearl/.kube/config
 runuser -l kearl -c 'kubectl apply -f /kubernetes/kube-flannel.yml'
 
 #Send message to all worker nodes listening on port 5100
+export clusterToken="$(sudo kubeadm token list | grep 'default-node-token' | awk '{ print $1 }')"
 apt-get install -y nmap
-nmap -Pn -p5100 --open 10.0.0.0/24 | grep "10.0.0" | awk '{ print $5 }' | xargs -I '$' sh -c 'echo "Hello Worker Node" | nc -w1 $ 5101'
+nmap -Pn -p5100 --open 10.0.0.0/24 | grep "10.0.0" | awk '{ print $5 }' | xargs -I '%' sh -c 'echo "$clusterToken" | nc -w1 % 5101'
